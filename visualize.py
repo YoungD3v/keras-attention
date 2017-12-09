@@ -19,22 +19,22 @@ def load_examples(file_name):
 if not os.path.exists(os.path.join(HERE, 'attention_maps')):
     os.makedirs(os.path.join(HERE, 'attention_maps'))
 
-SAMPLE_HUMAN_VOCAB = os.path.join(HERE, 'data', 'sample_human_vocab.json')
-SAMPLE_MACHINE_VOCAB = os.path.join(HERE, 'data', 'sample_machine_vocab.json')
+HUMAN_VOCAB = os.path.join(HERE, 'data', 'human_vocab.json')
+MACHINE_VOCAB = os.path.join(HERE, 'data', 'machine_vocab.json')
 SAMPLE_WEIGHTS = os.path.join(HERE, 'weights', 'sample_NMT.49.0.01.hdf5')
 
 class Visualizer(object):
 
     def __init__(self,
                  padding=None,
-                 input_vocab=SAMPLE_HUMAN_VOCAB,
-                 output_vocab=SAMPLE_MACHINE_VOCAB):
+                 input_vocab=HUMAN_VOCAB,
+                 output_vocab=MACHINE_VOCAB):
         """
             Visualizes attention maps
             :param padding: the padding to use for the sequences.
             :param input_vocab: the location of the input human
                                 vocabulary file
-            :param output_vocab: the location of the output 
+            :param output_vocab: the location of the output
                                  machine vocabulary file
         """
         self.padding = padding
@@ -78,7 +78,7 @@ class Visualizer(object):
 
         # add image
         i = ax.imshow(activation_map, interpolation='nearest', cmap='gray')
-        
+
         # add colorbar
         cbaxes = f.add_axes([0.2, 0, 0.6, 0.03])
         cbar = f.colorbar(i, cax=cbaxes, orientation='horizontal')
@@ -87,10 +87,10 @@ class Visualizer(object):
         # add labels
         ax.set_yticks(range(output_length))
         ax.set_yticklabels(predicted_text[:output_length])
-        
+
         ax.set_xticks(range(input_length))
         ax.set_xticklabels(text_[:input_length], rotation=45)
-        
+
         ax.set_xlabel('Input Sequence')
         ax.set_ylabel('Output Sequence')
 
@@ -113,7 +113,7 @@ def main(examples, args):
                            pad_length=args.padding,
                            n_chars=viz.input_vocab.size(),
                            n_labels=viz.output_vocab.size())
-
+    print(args.padding, viz.output_vocab.size())
     pred_model.load_weights(weights_file, by_name=True)
     pred_model.compile(optimizer='adam', loss='categorical_crossentropy')
 
@@ -154,12 +154,12 @@ if __name__ == '__main__':
     named_args.add_argument('-hv', '--human-vocab', metavar='|',
                             help="""Path to the human vocabulary""",
                             required=False,
-                            default=SAMPLE_HUMAN_VOCAB,
+                            default=HUMAN_VOCAB,
                             type=str)
     named_args.add_argument('-mv', '--machine-vocab', metavar='|',
                             help="""Path to the machine vocabulary""",
                             required=False,
-                            default=SAMPLE_MACHINE_VOCAB,
+                            default=MACHINE_VOCAB,
                             type=str)
     args = parser.parse_args()
 
